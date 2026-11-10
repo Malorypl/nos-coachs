@@ -2066,8 +2066,8 @@ DAYS.forEach(d=>{d.quiz.forEach((q,i)=>{q.id=d.id+"-q"+i;q.day=d;QIDX[q.id]=q});
 /* Pas de chiffres inutiles à apprendre (demande de Malory, 10/11) : seuls les chiffres clés restent en questions.
    Les autres questions dont la réponse est un chiffre sont retirées (le cours les mentionne toujours). Les identifiants ne changent pas. */
 (function(){
-  const KEY=[/(^|[^\d,])30\s?%/,/1 voix/,/\d\s?h\b/,/2 min/,/5 ans/,/1 000 € sur un PER/,/1,70\s?%/,/22\s?950/,/2,50\s?%/,/35\s?%/,/25 ans/,/100\s?000/,/8 ans/,/70 ans/,/3 à 6 mois/,/(^|[^\d,])0\s?%/];
-  const KEYN=[1.7,22950,2.5,35,25,100000,8,70,0];
+  const KEY=[/12\s?000/,/10\s?000/,/1\s?600/,/61\s?200/,/15\s?300/,/150\s?000/,/7 à 8\s?%/,/2 à 3\s?%/,/14\s?jours/,/1 an et 8 jours/,/8 semaines/,/(^|[^\d,])30\s?%/,/1 voix/,/\d\s?h\b/,/2 min/,/5 ans/,/1 000 € sur un PER/,/1,70\s?%/,/22\s?950/,/2,50\s?%/,/35\s?%/,/25 ans/,/100\s?000/,/8 ans/,/70 ans/,/3 à 6 mois/,/(^|[^\d,])0\s?%/];
+  const KEYN=[12000,10000,1600,61200,15300,150000,14,1.7,22950,2.5,35,25,100000,8,70,0];
   const sp=s=>String(s==null?"":s).replace(/<[^>]+>/g," ").replace(/[  ]/g," ");
   const hasNum=s=>/\d/.test(sp(s).replace(/\b(1er|2026|2025|CAC 40)\b/g,""));
   const key=s=>KEY.some(r=>r.test(sp(s)));
