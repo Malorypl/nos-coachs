@@ -1770,6 +1770,9 @@ r:["Livrets 1,70 %, LEP 2,50 %","AV : 8 ans (4 600 €) et 70 ans (152 500�
 };
 
 const MODS={1:"préparer mes entretiens"};DAYS.forEach(d=>d.mod=1);
+/* Ajouts du 10/11 après-midi : tableau des cartes par banque et groupes bancaires (fiche p. 19-20). */
+COURS.d8.s.push(["Les cartes de tes trois banques","<p>Pas besoin de retenir les prix : chaque caisse fixe les siens. Retiens plutôt <b>le nom des cartes</b> et <b>la spécificité</b> de chaque banque.</p><table><tr><th></th><th>Crédit Agricole</th><th>Crédit Mutuel</th><th>Banque Populaire</th></tr><tr><th>Offre groupée</th><td>Essentiel, Premium, Prestige ; Eko (petit prix)</td><td>Eurocompte (Confort, Sérénité…)</td><td>Selon la banque régionale</td></tr><tr><th>Classique</th><td>Mastercard / Visa</td><td>Mastercard / Visa Classic</td><td>CB-Visa Classic</td></tr><tr><th>Premium</th><td>Gold Mastercard / Visa Premier</td><td>Mastercard Gold / Visa Premier</td><td>Visa Premier</td></tr><tr><th>Prestige</th><td>World Elite / Visa Infinite</td><td>World Elite / Visa Infinite</td><td>Visa Platinum, Visa Infinite</td></tr><tr><th>Jeunes, petit budget</th><td>L’Autre Carte</td><td>Eurocompte Jeune</td><td>Carte à autorisation systématique</td></tr><tr><th>À citer</th><td>Budget Protégé (clients fragiles)</td><td>Livret Bleu</td><td>Visa Platinum, rare ailleurs</td></tr></table>","Avant l’entretien, regarde les tarifs de la caisse où tu postules : c’est une bonne façon de montrer que tu t’es renseignée."]);
+COURS.d14.s.push(["Les groupes bancaires","<table><tr><th></th><th>Crédit Agricole</th><th>Crédit Mutuel</th><th>Banque Populaire</th></tr><tr><th>Organisation</th><td>Caisses locales → caisses régionales → Crédit Agricole SA</td><td>Caisses locales → fédérations → groupes : Crédit Mutuel Alliance Fédérale (le principal), Crédit Mutuel Arkéa (Bretagne, Sud-Ouest)</td><td>12 banques régionales dans le groupe BPCE, avec les Caisses d’Épargne</td></tr><tr><th>À connaître</th><td>LCL, Crédit Agricole Assurances</td><td>CIC et ACM (Alliance Fédérale). Arkéa est un groupe à part.</td><td>BRED et Casden sont des Banques Populaires. Natixis et BPCE Assurances font partie du groupe BPCE.</td></tr></table>","Piège classique : la BRED n’est pas une filiale, c’est une Banque Populaire."]);
 
 </script>
 
@@ -2030,6 +2033,10 @@ d20:[
   err("d20","Le LEP rapporte 1,70 %.","1,70","2,50","LEP : 2,50 %. Livret A et LDDS : 1,70 %.");
 })();
 
+EXTRA_SRC.d8.push(["S","À quelle banque appartient cette carte ou cette offre ?",["Crédit Agricole","Crédit Mutuel","Banque Populaire"],[["Eko",0],["L’Autre Carte",0],["Eurocompte Jeune",1],["Eurocompte Confort",1],["CB-Visa Classic",2]],"Le nom des offres montre que tu connais la banque où tu postules."]);
+EXTRA_SRC.d14.push(["S","À quel groupe appartient chaque entité ?",["Crédit Agricole","Crédit Mutuel","Groupe BPCE"],[["LCL",0],["CIC",1],["ACM",1],["BRED",2],["Casden",2],["Natixis",2]],"BRED et Casden sont des Banques Populaires ; Natixis appartient au groupe BPCE."]);
+EXTRA_SRC.d14.push(["D","Le groupe Crédit Mutuel à part, implanté en Bretagne et dans le Sud-Ouest.","Arkéa",["Alliance","BPCE"],null,"Crédit Mutuel Arkéa est indépendant de Crédit Mutuel Alliance Fédérale."]);
+
 /* ---------- formats ajoutés : écrits à la main + plusieurs bonnes réponses ---------- */
 (function(){
   const add=(id,q)=>{const d=DAYS.find(x=>x.id===id.split("#")[0]);if(d&&!d.story&&!d.exam)d.quiz.push(Object.assign(q,{cf:1}))};
@@ -2056,6 +2063,29 @@ d20:[
       e:"Les phrases correctes : "+goods.join(" · ")})});
 })();
 DAYS.forEach(d=>{d.quiz.forEach((q,i)=>{q.id=d.id+"-q"+i;q.day=d;QIDX[q.id]=q});d.caps.forEach((c,i)=>{c.id=d.id+"-c"+i;c.day=d;CIDX[c.id]=c})});
+/* Pas de chiffres inutiles à apprendre (demande de Malory, 10/11) : seuls les chiffres clés restent en questions.
+   Les autres questions dont la réponse est un chiffre sont retirées (le cours les mentionne toujours). Les identifiants ne changent pas. */
+(function(){
+  const KEY=[/1,70\s?%/,/22\s?950/,/2,50\s?%/,/35\s?%/,/25 ans/,/100\s?000/,/8 ans/,/70 ans/,/3 à 6 mois/,/(^|[^\d,])0\s?%/];
+  const KEYN=[1.7,22950,2.5,35,25,100000,8,70,0];
+  const sp=s=>String(s==null?"":s).replace(/<[^>]+>/g," ").replace(/[  ]/g," ");
+  const hasNum=s=>/\d/.test(sp(s).replace(/\b(1er|2026|2025|CAC 40)\b/g,""));
+  const key=s=>KEY.some(r=>r.test(sp(s)));
+  const detail=(ans,all)=>hasNum(ans)&&!key(all);
+  function ansOf(q){switch(q.k){
+    case "qcm":return q.o&&q.o[q.a];case "num":return String(q.a);case "vf":return q.q;
+    case "match":return (q.pairs||[]).map(p=>p.join(" ")).join(" ");case "multi":return (q.ok||[]).map(i=>q.o[i]).join(" ");
+    case "err":return q.good;case "sort":return (q.items||[]).map(x=>x[0]).join(" ");case "dlg":return (q.bl||[]).map(b=>b[0]).join(" ");default:return ""}}
+  let n=0;
+  DAYS.forEach(d=>{if(!d.quiz)return;d.quiz=d.quiz.filter(q=>{
+    let drop=false;
+    if(q.k==="num")drop=!KEYN.includes(+q.a);
+    else{const a=ansOf(q);drop=detail(a,a+" "+(q.q||"")+" "+(q.e||""))}
+    if(drop){delete QIDX[q.id];n++}return !drop})});
+  Object.keys(CARDS).forEach(id=>{const c=CARDS[id];if(!c.phrase&&detail(c.a,c.a)){delete CARDS[id];n++}});
+  window.__nodetail=n;window.__D=DAYS;window.__C=CARDS;
+})();
+
 const strip=h=>String(h).replace(/<br\s*\/?>/g,"\n").replace(/<\/(td|tr)>/g," ").replace(/<[^>]+>/g,"");
 function answerText(q){if(q.k==="multi")return q.ok.map(i=>q.o[i]).join(" · ");if(q.k==="dlg")return dlgFill(q,q.bl.map(b=>b[0]));if(q.k==="sort")return q.items.map(x=>x[0]+" → "+q.cols[x[1]]).join(" ; ");if(q.k==="err")return q.good;if(q.k==="qcm")return q.o[q.a];if(q.k==="vf")return q.a?"Vrai":"Faux";if(q.k==="num")return frNum(q.a)+" "+(q.u||"");
   if(q.k==="order")return q.items.map((t,k)=>(k+1)+". "+t).join(" → ");if(q.k==="match")return q.pairs.map(p=>p[0]+" = "+p[1]).join(" ; ");return ""}
@@ -3220,7 +3250,7 @@ function startPaires(){const plain=DAYS.filter(d=>!d.exam&&!d.story);let days=pl
 ["d13","CRAC","traiter un refus"],["d14","Crédit Agricole","LCL"],["d14","Crédit Mutuel","CIC"],["d14","Banque Populaire","artisans et PME"],
 ["d16","PEA","150 000 €"],["d16","TMI","tranche la plus haute"],["d17","Endettement","35 %"],["d17","Crédit conso","14 jours"],["d17","Loi Lemoine","assurance emprunteur"],
 ["d18","Chèque","1 an et 8 jours"],["d18","Prélèvement","8 semaines"],["d18","Carte volée","opposition"],["d19","Secret bancaire","même la famille"]];
-const pool=[],seen=new Set();const addPool=ds=>ds.forEach(d=>PAIRS_BQ.filter(x=>x[0]===d.id).map(x=>[x[2],x[1]]).forEach(c=>{const a=String(c[1]).trim(),f=String(c[0]).trim();
+const pool=[],seen=new Set();const addPool=ds=>ds.forEach(d=>PAIRS_BQ.filter(x=>x[0]===d.id).map(x=>[x[2],x[1]]).filter(c=>!/\d/.test(c[0])||/1,70|22 950|2,50|35 %|25 ans|100 000|8 ans|70 ans|3 à 6 mois|0 %/.test(c[0])).forEach(c=>{const a=String(c[1]).trim(),f=String(c[0]).trim();
     if(a.split(/\s+/).length<=3&&a.length<=22&&f.length<=26&&!/[?!.]/.test(a)&&!seen.has(a.toLowerCase())&&!seen.has("fr:"+f.toLowerCase())){seen.add(a.toLowerCase());seen.add("fr:"+f.toLowerCase());pool.push([a,f])}}));addPool(days);
   while(pool.length<6&&extra<plain.length){const d=plain[extra++];if(days.includes(d))continue;days.push(d);addPool([d])}
   const pick=shuffle(pool).slice(0,6);if(pick.length<3){home();return}
