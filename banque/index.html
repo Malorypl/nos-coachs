@@ -2066,7 +2066,7 @@ DAYS.forEach(d=>{d.quiz.forEach((q,i)=>{q.id=d.id+"-q"+i;q.day=d;QIDX[q.id]=q});
 /* Pas de chiffres inutiles à apprendre (demande de Malory, 10/11) : seuls les chiffres clés restent en questions.
    Les autres questions dont la réponse est un chiffre sont retirées (le cours les mentionne toujours). Les identifiants ne changent pas. */
 (function(){
-  const KEY=[/1,70\s?%/,/22\s?950/,/2,50\s?%/,/35\s?%/,/25 ans/,/100\s?000/,/8 ans/,/70 ans/,/3 à 6 mois/,/(^|[^\d,])0\s?%/];
+  const KEY=[/(^|[^\d,])30\s?%/,/1 voix/,/\d\s?h\b/,/2 min/,/5 ans/,/1 000 € sur un PER/,/1,70\s?%/,/22\s?950/,/2,50\s?%/,/35\s?%/,/25 ans/,/100\s?000/,/8 ans/,/70 ans/,/3 à 6 mois/,/(^|[^\d,])0\s?%/];
   const KEYN=[1.7,22950,2.5,35,25,100000,8,70,0];
   const sp=s=>String(s==null?"":s).replace(/<[^>]+>/g," ").replace(/[  ]/g," ");
   const hasNum=s=>/\d/.test(sp(s).replace(/\b(1er|2026|2025|CAC 40)\b/g,""));
@@ -2079,7 +2079,7 @@ DAYS.forEach(d=>{d.quiz.forEach((q,i)=>{q.id=d.id+"-q"+i;q.day=d;QIDX[q.id]=q});
   let n=0;
   DAYS.forEach(d=>{if(!d.quiz)return;d.quiz=d.quiz.filter(q=>{
     let drop=false;
-    if(q.k==="num")drop=!KEYN.includes(+q.a);
+    if(q.k==="num")drop=!KEYN.includes(+q.a)&&!/35\s?%/.test(sp(q.q+" "+q.e));
     else{const a=ansOf(q);drop=detail(a,a+" "+(q.q||"")+" "+(q.e||""))}
     if(drop){delete QIDX[q.id];n++}return !drop})});
   Object.keys(CARDS).forEach(id=>{const c=CARDS[id];if(!c.phrase&&detail(c.a,c.a)){delete CARDS[id];n++}});
