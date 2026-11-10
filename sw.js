@@ -1,5 +1,5 @@
 // Hors ligne : on essaie toujours le réseau d'abord (pour avoir la dernière version), sinon la copie gardée.
-const C="nos-coachs-9b77edc314";
+const C="nos-coachs-ad58e1724a";
 const FILES=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png","icon-180.png"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
