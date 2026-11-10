@@ -11,6 +11,38 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
+<script src="fb/firebase-app-compat.js"></script>
+<script src="fb/firebase-firestore-compat.js"></script>
+<script>/* Synchro en ligne de la version GitHub : Firebase (Firestore) présenté à l'appli comme la base de Claude.
+   Chaque document est rangé en texte JSON (champ j) : Firestore refuse certains formats (tableaux imbriqués). */
+(function(){
+  var CFG = {"apiKey":"AIzaSyAP396XltXoqPpNxz_ZOlc1NMlLd_o9mXM","authDomain":"bloup-coachs.firebaseapp.com","projectId":"bloup-coachs","storageBucket":"bloup-coachs.firebasestorage.app","messagingSenderId":"462358932935","appId":"1:462358932935:web:a9f9d28507c696103ebde2"};
+  var ready = null;
+  function init(){
+    if (ready) return ready;
+    ready = new Promise(function(res){
+      try{
+        if (!window.firebase || !firebase.initializeApp) return res(null);
+        if (!firebase.apps.length) firebase.initializeApp(CFG);
+        var fs = firebase.firestore();
+        var wrap = function(snap){ return { id: snap.id, exists: snap.exists, data: function(){ var d = snap.data(); if (!d) return d; if (typeof d.j === "string") { try { return JSON.parse(d.j) } catch(e){ return null } } return d } } };
+        var api = {
+          doc: function(path){ var r = fs.doc(path); return {
+            get: function(){ return r.get().then(wrap) },
+            set: function(v){ return r.set({ j: JSON.stringify(v), at: Date.now() }) }
+          }},
+          collection: function(name){ var c = fs.collection(name); return {
+            onSnapshot: function(cb, err){ return c.onSnapshot(function(s){ cb({ docs: s.docs.map(wrap) }) }, err || function(){}) }
+          }}
+        };
+        res(api);
+      }catch(e){ res(null) }
+    });
+    return ready;
+  }
+  window.claude = { use: function(name){ return name === "db" ? init() : Promise.resolve(null) } };
+})();
+</script>
 </head>
 <body>
 <title>Nos coachs</title>
@@ -145,7 +177,7 @@ function chooser(){const L=document.getElementById("launcher");if(!L)return;
   <div class="duel"><h3><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2M14.5 6.5L18 3h3v3l-3.5 3.5M5 14l4 4M7 17l-3 3M3 19l2 2"/></svg>Défi de la semaine</h3>
    <div class="row"><span>Malory</span><span class="bar"><i style="width:${m/mx*100}%"></i></span><b>${m}</b></div>
    <div class="row o"><span>Jérémy</span><span class="bar"><i style="width:${j/mx*100}%"></i></span><b>${j}</b></div>
-   <p>${DB?"Mis à jour tout seul. Points de la semaine en anglais et en espagnol, remis à zéro chaque lundi.":dbTried?"Sur cette version, le score se met à jour quand vous révisez sur le même appareil. Pour passer vos progrès d’un appareil à l’autre : « Sauvegarder ou restaurer mes progrès » ci-dessous.":"Je récupère les scores…"}</p></div>
+   <p>${DB?"Mis à jour tout seul. Points de la semaine en anglais et en espagnol, remis à zéro chaque lundi.":dbTried?"Pas de connexion pour l’instant : le score se mettra à jour tout seul dès qu’internet revient.":"Je récupère les scores…"}</p></div>
   <div class="bk"><button id="bkbtn">Sauvegarder ou restaurer mes progrès</button><div id="bkp"></div></div>`;
   document.getElementById("bkbtn").onclick=backupPanel;
   L.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{SEL=b.dataset.k;ls.set(PICK,SEL);paintSel()});
