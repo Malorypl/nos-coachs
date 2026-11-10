@@ -17,3 +17,8 @@ Une fois ouverte une première fois, l'appli marche aussi sans internet.
 Les progrès sont enregistrés sur l'appareil. Pour les copier d'un appareil à l'autre (ou depuis l'appli Claude) :
 sur l'écran « Qui révise ? », touche **Sauvegarder ou restaurer mes progrès**, copie le code, puis colle-le sur l'autre appareil.
 Pour chaque coach, c'est toujours la progression la plus avancée qui est gardée : rien n'est perdu.
+
+## Coach Conseillère (révisions banque)
+
+Appli personnelle de Malory pour préparer ses entretiens de conseillère bancaire : **https://malorypl.github.io/nos-coachs/banque/**
+Elle s'installe à part, avec sa propre icône (iPhone : Partager → « Sur l'écran d'accueil »).
